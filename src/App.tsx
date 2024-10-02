@@ -1,16 +1,15 @@
+import Layout from "./components/Layout";
 import { FileProvider } from "./components/provider";
-import Sidebar from "./components/Sidebar";
+
 
 
 export default function App() {
 
   return (
     <FileProvider>
-
-    <div>
-      <Sidebar />
-  
-    </div>
+          <div>
+              <Layout />
+          </div>
     </FileProvider>
   )
 }
