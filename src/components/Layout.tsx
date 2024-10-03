@@ -30,13 +30,15 @@ export default function Layout() {
         };
       }, [saveChanges]);
   return (
-    <div className="h-full">
-   <Navbar />
-    <div className="flex  h-full">
-      <Sidebar />
-      <Editor />
-    </div>
-    <ToastContainer />
+    <div className="flex flex-col h-full ">
+        <div>
+           <Navbar />
+        </div>
+        <div className="flex grow ">
+            <Sidebar />
+            <Editor />
+       </div>
+       <ToastContainer />
     </div>
   )
 }

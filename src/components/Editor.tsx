@@ -120,7 +120,7 @@ const Editor: React.FC = () => {
       contentEditable={true}
       onInput={handleInput}
       onKeyDown={handleKeyDown}
-      className={`w-full h-full border ${currentTheme.borderColor} p-4 font-mono text-sm overflow-y-scroll whitespace-pre-wrap ${currentTheme.editorBg} outline-none ${currentTheme.editorText}`}
+      className={`w-full h-full border overflow-y-scroll transition-all duration-300 ease-in-out ${currentTheme.borderColor} pt-10 pl-5 font-mono text-sm overflow-y-scroll whitespace-pre-wrap ${currentTheme.editorBg} outline-none ${currentTheme.editorText}`}
     />
   );
 };

@@ -24,7 +24,7 @@ export default function Navbar() {
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen)
 
   return (
-    <nav className={`${currentTheme.navbarBg} ${currentTheme.borderColor} ${currentTheme.navbarText} flex items-center justify-between p-4 border-b`}>
+    <nav className={`${currentTheme.navbarBg} ${currentTheme.borderColor} ${currentTheme.navbarText} transition-all duration-300 ease-in-out flex items-center justify-between p-4 border-b`}>
       <div className="text-lg font-semibold">
         CodeForge
       </div>
