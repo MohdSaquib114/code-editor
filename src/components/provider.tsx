@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from "uuid";
+import { Theme, themes } from '../lib/Theme';
 
 export interface File {
   id: string;
@@ -23,17 +24,32 @@ interface FileContextType {
   deleteFile: (parentFolderId: string, fileId: string) => void;
   openFile: (fileId: string) => void;
   closeFile: () => void;
+  updateFileContent: (fileId: string, newContent: string) => void;
+  saveChanges: () => void;
+  currentLang: string
+  setCurrentLang: (currentLang:string) => void;
+  currentTheme: Theme;
+  setTheme : (currentTheme:Theme) => void
 }
 
 const FileContext = createContext<FileContextType | undefined>(undefined);
 
 export const FileProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [folders, setFolders] = useState<Folder[]>([]);
+  const [folders, setFolders] = useState<Folder[]>(() => {
+    const savedFolders = localStorage.getItem('folders');
+    return savedFolders ? JSON.parse(savedFolders) : [];
+  });
+  const [currentLang,setCurrentLang] = useState('js')
+  const [currentTheme, setTheme] = useState<Theme>(themes.default)
   const [currentFile, setCurrentFile] = useState<File | null>({
     id: uuidv4(),
     name: "Welcome",
     content: "Welcome! Create a new file or folder to get started.",
   });
+
+  useEffect(() => {
+    localStorage.setItem('folders', JSON.stringify(folders));
+  }, [folders]);
 
   const addFolder = (parentFolderId: string | null, folderName: string) => {
     const newFolder: Folder = {
@@ -80,8 +96,8 @@ export const FileProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const addFile = (parentFolderId: string, fileName: string) => {
     const newFile: File = {
       id: uuidv4(),
-      name: fileName,
-      content: "",
+      name: fileName + `.${currentLang}`,
+      content: "//Write your code here",
     };
     const updatedFolders = [...folders];
     const addFileToFolder = (folderList: Folder[]) => {
@@ -133,8 +149,34 @@ export const FileProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setCurrentFile(null);
   };
 
+  const updateFileContent = (fileId: string, newContent: string) => {
+    const updatedFolders = [...folders];
+    const updateContent = (folderList: Folder[]) => {
+      folderList.forEach((folder) => {
+        folder.files.forEach((file) => {
+          if (file.id === fileId) {
+            file.content = newContent;
+          }
+        });
+        updateContent(folder.subfolders);
+      });
+    };
+    updateContent(updatedFolders);
+    setFolders(updatedFolders);
+
+    if (currentFile?.id === fileId) {
+      setCurrentFile((prevFile) => prevFile ? { ...prevFile, content: newContent } : null);
+    }
+  };
+
+  const saveChanges = () => {
+    if (folders.length > 0) {
+        localStorage.setItem('folders', JSON.stringify(folders))
+      }
+  }
+
   return (
-    <FileContext.Provider value={{ folders, currentFile, addFolder, deleteFolder, addFile, deleteFile, openFile, closeFile }}>
+    <FileContext.Provider value={{ currentTheme, setTheme,folders, currentFile, addFolder, deleteFolder, addFile, deleteFile, openFile, closeFile, updateFileContent,saveChanges,currentLang,setCurrentLang }}>
       {children}
     </FileContext.Provider>
   );

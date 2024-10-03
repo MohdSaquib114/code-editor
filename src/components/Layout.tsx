@@ -1,11 +1,42 @@
+import { useEffect } from "react"
 import Editor from "./Editor"
+import Navbar from "./Navbar"
 import Sidebar from "./Sidebar"
+import { useFileContext } from "./provider"
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 export default function Layout() {
+
+   
+    const {saveChanges} = useFileContext()
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+         
+          if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+            e.preventDefault(); 
+            saveChanges();
+            toast.success("Changes Save !")
+          }
+        };
+    
+       
+        window.addEventListener('keydown', handleKeyDown);
+    
+       
+        return () => {
+          window.removeEventListener('keydown', handleKeyDown);
+        };
+      }, [saveChanges]);
   return (
-    <div className="flex">
+    <div className="h-full">
+   <Navbar />
+    <div className="flex  h-full">
       <Sidebar />
       <Editor />
+    </div>
+    <ToastContainer />
     </div>
   )
 }

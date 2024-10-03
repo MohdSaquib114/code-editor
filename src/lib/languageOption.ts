@@ -1,4 +1,4 @@
 export const languageOptions = [
-    { langCode: 'JS', langName: 'JavaScript' },
-    { langCode: 'TS', langName: 'TypeScript' },
+    { langCode: 'js', langName: 'JavaScript' },
+    { langCode: 'ts', langName: 'TypeScript' },
   ];

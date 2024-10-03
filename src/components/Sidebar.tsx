@@ -1,12 +1,20 @@
-import React, { useState } from 'react'
-import { ChevronRight, ChevronDown, File, Folder, Plus, Trash2, X } from 'lucide-react'
+import  { useState } from 'react'
+import { ChevronRight, ChevronDown,  Folder, Plus, Trash2, X } from 'lucide-react'
 import { Folder as FolderType, useFileContext } from './provider'
+import JsIcon from './icon/JsIcon'
+import TsIcon from './icon/TsIcon'
+import { themes } from '../lib/Theme'
 
 export default function FileExplorer() {
-  const { folders, addFolder, deleteFolder, addFile, deleteFile, openFile } = useFileContext()
+  const { folders, addFolder, deleteFolder, addFile, deleteFile, openFile ,currentFile, currentLang, setTheme, currentTheme } = useFileContext()
   const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set())
   const [newItemName, setNewItemName] = useState('')
   const [creatingIn, setCreatingIn] = useState<{ folderId: string | null, type: 'file' | 'folder' } | null>(null)
+  const [selectedOption, setSelectedOption] = useState('Select Theme')
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+
+ 
+console.log(currentTheme)
 
   const toggleFolder = (folderId: string) => {
     setExpandedFolders((prevExpandedFolders) => {
@@ -21,7 +29,6 @@ export default function FileExplorer() {
   }
 
   const handleCreateNew = (folderId: string | null, type: 'file' | 'folder') => {
-    
     setCreatingIn({ folderId, type })
     setNewItemName('')
   }
@@ -30,8 +37,7 @@ export default function FileExplorer() {
     e.preventDefault()
     if (creatingIn && newItemName.trim()) {
       if (creatingIn.type === 'file') {
-        //@ts-ignore
-        addFile(creatingIn.folderId, newItemName.trim())
+        addFile(creatingIn.folderId as string, newItemName.trim())
       } else {
         addFolder(creatingIn.folderId, newItemName.trim())
       }
@@ -42,11 +48,12 @@ export default function FileExplorer() {
 
   const renderFolders = (folders: FolderType[], parentFolderId: string | null = null) => {
     return folders.map((folder) => (
-        
       <div key={folder.id} className="pl-4">
         <div className="flex items-center group">
           <button 
-            className="p-1 hover:bg-gray-100 rounded-sm"
+          type='button'
+          title='expand folder'
+            className={`p-1 hover:${currentTheme.sidebarHover} rounded-sm`}
             onClick={() => toggleFolder(folder.id)}
           >
             {expandedFolders.has(folder.id) ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
@@ -55,19 +62,25 @@ export default function FileExplorer() {
           <span className="flex-grow">{folder.name }</span>
           <div className="hidden group-hover:flex">
             <button 
-              className="p-1 hover:bg-gray-100 rounded-sm"
+             type='button'
+             title='Add Folder'
+              className={`p-1 hover:${currentTheme.sidebarHover} rounded-sm`}
               onClick={() => handleCreateNew(folder.id, 'file')}
             >
               <Plus size={14} />
             </button>
             <button 
-              className="p-1 hover:bg-gray-100 rounded-sm"
+             type='button'
+                   title='Add Folder'
+              className={`p-1 hover:${currentTheme.sidebarHover} rounded-sm`}
               onClick={() => handleCreateNew(folder.id, 'folder')}
             >
               <Folder size={14} />
             </button>
-            <button 
-              className="p-1 hover:bg-gray-100 rounded-sm"
+            <button
+             type='button' 
+                   title='Add Folder'
+              className={`p-1 hover:${currentTheme.sidebarHover} rounded-sm`}
               onClick={() => deleteFolder(parentFolderId, folder.id)}
             >
               <Trash2 size={14} />
@@ -77,11 +90,13 @@ export default function FileExplorer() {
         {expandedFolders.has(folder.id) && (
           <div>
             {folder.files.map((file) => (
-              <div onClick={() => openFile(file.id)} key={file.id} className="flex items-center group pl-6">
-                <File size={16} className="mr-1" />
+              <div onClick={() => openFile(file.id)} key={file.id} className={`${file.id === currentFile?.id ?currentTheme.sidebarBtnSelected:"" } flex items-center group cursor-pointer pl-6 m-1`}>
+               { currentLang === "js" ? <JsIcon /> : <TsIcon />}
                 <span className="flex-grow">{file.name}</span>
-                <button 
-                  className="hidden group-hover:block p-1 hover:bg-gray-100 rounded-sm"
+                <button
+                 title='Delete File' type='button'  
+               
+                  className={`hidden group-hover:block p-1 hover:${currentTheme.sidebarHover} rounded-sm`}
                   onClick={() => deleteFile(folder.id, file.id)}
                 >
                   <Trash2 size={14} />
@@ -89,36 +104,35 @@ export default function FileExplorer() {
               </div>
             ))}
             {renderFolders(folder.subfolders, folder.id)}
-           
           </div>
         )}
         { creatingIn && creatingIn.folderId === folder.id && (
-                
-                <form onSubmit={handleSubmitNew} className="flex items-center pl-6 mt-1">
-                  <input
-                    type="text"
-                    value={newItemName}
-                    onChange={(e) => setNewItemName(e.target.value)}
-                    placeholder={`New ${creatingIn.type} name`}
-                    className="flex-grow border rounded-sm px-1 py-0.5 text-sm"
-                    autoFocus
-                  />
-                  <button type="submit" className="p-1 hover:bg-gray-100 rounded-sm">
-                    <Plus size={14} />
-                  </button>
-                  <button type="button" onClick={() => setCreatingIn(null)} className="p-1 hover:bg-gray-100 rounded-sm">
-                    <X size={14} />
-                  </button>
-                </form>
-              )}
+          <form onSubmit={handleSubmitNew} className="flex items-center pl-6 mt-1">
+            <input
+              type="text"
+              value={newItemName}
+              onChange={(e) => setNewItemName(e.target.value)}
+              placeholder={`New ${creatingIn.type} name`}
+           
+              className={`${currentTheme.sidebarBg} flex-grow border rounded-sm px-1 py-0.5 text-sm`}
+              autoFocus
+            />
+            <button title='Add Folder' type='button'  className={`p-1 hover:${currentTheme.sidebarHover} rounded-sm`}>
+              <Plus size={14} />
+            </button>
+            <button title='Delete  Folder' type='button'  onClick={() => setCreatingIn(null)} className={`p-1 hover:${currentTheme.sidebarHover} rounded-sm`}>
+              <X size={14} />
+            </button>
+          </form>
+        )}
       </div>
     ))
   }
 
   return (
-    <div className="w-64 h-screen border-r overflow-y-auto">
-      <div className="flex items-center p-2 text-sm font-semibold sticky top-0 bg-white z-10 border-b">
-        <button className="p-1 hover:bg-gray-100 rounded-sm">
+    <div className={`${currentTheme.sidebarBg} ${currentTheme.sidebarText} w-64 h-full border-r overflow-y-auto`}>
+      <div className="flex items-center p-2 text-sm font-semibold sticky top-0  z-10 border-b">
+        <button title='slide' type='button' className={`p-1 hover:${currentTheme.sidebarHover} rounded-sm`}>
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="3" y1="12" x2="21" y2="12"></line>
             <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -127,7 +141,7 @@ export default function FileExplorer() {
         </button>
         <span className="ml-2">Explorer</span>
       </div>
-      <div className="explorer">
+      <div className="explorer border-b py-3">
         {renderFolders(folders)}
         <div className="p-2">
           {creatingIn && creatingIn.folderId === null ? (
@@ -137,19 +151,20 @@ export default function FileExplorer() {
                 value={newItemName}
                 onChange={(e) => setNewItemName(e.target.value)}
                 placeholder="New root folder name"
-                className="flex-grow border rounded-sm px-1 py-0.5 text-sm"
+                className={`${currentTheme.sidebarBg} flex-grow border rounded-sm px-1 py-0.5 text-sm`}
                 autoFocus
               />
-              <button type="submit" className="p-1 hover:bg-gray-100 rounded-sm">
+              <button title='Add Folder' type="submit" className={`p-1 hover:${currentTheme.sidebarHover} rounded-sm`}>
                 <Plus size={14} />
               </button>
-              <button type="button" onClick={() => setCreatingIn(null)} className="p-1 hover:bg-gray-100 rounded-sm">
+              <button  title='Delete Folder' type='button'  onClick={() => setCreatingIn(null)} className={`p-1 hover:${currentTheme.sidebarHover} rounded-sm`}>
                 <X size={14} />
               </button>
             </form>
           ) : (
             <button 
-              className="w-full text-left p-1 hover:bg-gray-100 rounded-sm"
+            type='button'
+              className={`w-full text-left p-1 hover:${currentTheme.sidebarHover} rounded-sm`}
               onClick={() => handleCreateNew(null, 'folder')}
             >
               <Plus size={14} className="inline mr-1" />
@@ -158,6 +173,36 @@ export default function FileExplorer() {
           )}
         </div>
       </div>
+      <div className="relative py-3 px-5  space-y-4 justify-center ">
+      <p className=' text-sm font-medium '>Change Theme</p>
+          <button
+          type='button'
+            onClick={()=>setIsDropdownOpen(!isDropdownOpen)}
+            className={`px-3 py-1 text-sm border rounded hover:${currentTheme.sidebarHover} focus:outline-none focus:ring-2 focus:ring-gray-200`}
+          >
+            {selectedOption}
+            <span className="ml-2">▼</span>
+          </button>
+          {isDropdownOpen && (
+            <div className={`absolute  mt-2 w-44 ${currentTheme.sidebarBg} border rounded shadow-lg`}>
+              {['default','dark','twilight','mystic'].map((option) => (
+                <button
+                type='button'
+                  key={option}
+                  onClick={() => {
+                    setSelectedOption(option)
+                    setTheme(themes[option])
+                    
+                    setIsDropdownOpen(false)
+                  }}
+                  className={`block w-full text-left px-4 py-2 text-sm hover:${currentTheme.sidebarText} focus:outline-none focus:${currentTheme.sidebarHover}`}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
     </div>
   )
 }
