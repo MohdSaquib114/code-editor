@@ -1,10 +1,12 @@
 
 import React, { useState } from 'react'
 import { ChevronRight, ChevronDown, Folder, Plus, Trash2, X, ChevronsLeft, ChevronsRight } from 'lucide-react'
-import { Folder as FolderType, useFileContext } from './provider'
+import { Folder as FolderType } from './provider'
+
 import JsIcon from './icon/JsIcon'
 import TsIcon from './icon/TsIcon'
 import { themes } from '../lib/Theme'
+import { useFileContext } from '../hooks/useFileContext'
 
 export default function FileExplorer() {
   const { folders, addFolder, deleteFolder, addFile, deleteFile, openFile, currentFile, currentLang, setTheme, currentTheme } = useFileContext()

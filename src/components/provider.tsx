@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from "uuid";
 import { Theme, themes } from '../lib/Theme';
 
@@ -32,7 +32,7 @@ interface FileContextType {
   setTheme : (currentTheme:Theme) => void
 }
 
-const FileContext = createContext<FileContextType | undefined>(undefined);
+export const FileContext = createContext<FileContextType | undefined>(undefined);
 
 export const FileProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [folders, setFolders] = useState<Folder[]>(() => {
@@ -184,10 +184,4 @@ export const FileProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 };
 
-export const useFileContext = () => {
-  const context = useContext(FileContext);
-  if (!context) {
-    throw new Error('useFileContext must be used within a FileProvider');
-  }
-  return context;
-};
+

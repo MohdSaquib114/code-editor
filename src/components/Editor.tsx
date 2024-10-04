@@ -1,5 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useFileContext } from './provider';
+import React, { useEffect, useRef } from 'react';
+import { useFileContext } from '../hooks/useFileContext';
+
 
 const Editor: React.FC = () => {
  
@@ -8,8 +9,7 @@ const Editor: React.FC = () => {
  
 
   const handleInput = (e: React.FormEvent<HTMLDivElement>) => {
-
-    updateFileContent(currentFile?.id as string,e.currentTarget.innerText)
+      updateFileContent(currentFile?.id as string,e.currentTarget.innerText)
   };
 
 
@@ -33,7 +33,7 @@ const Editor: React.FC = () => {
     if (selection.rangeCount > 0) {
         const range = selection.getRangeAt(0);
         
-        // Create and insert a line break element
+       
         const lineBreak = document.createElement('br');
         range.insertNode(lineBreak);
 
@@ -41,15 +41,15 @@ const Editor: React.FC = () => {
         // const newTextNode = document.createTextNode('');
         // range.insertNode(newTextNode);
         
-        // Move the cursor to the position after the new text node
+       
         range.setStartAfter(lineBreak);
         range.setEndAfter(lineBreak);
         
-        // Clear the selection and set it to the new range
+       
         selection.removeAllRanges();
         selection.addRange(range);
 
-        // Focus on the editor to ensure the cursor is visible
+        
         const editor = document.getElementById('editor');
         if (editor) {
             editor.focus();
@@ -66,7 +66,7 @@ const Editor: React.FC = () => {
     if (!selection || selection.rangeCount === 0) return;
 
     const range = selection.getRangeAt(0);
-    const tabNode = document.createTextNode('    '); // Insert four spaces for Tab
+    const tabNode = document.createTextNode('    '); 
 
     range.insertNode(tabNode);
     range.setStartAfter(tabNode);
@@ -77,27 +77,21 @@ const Editor: React.FC = () => {
 
 
 useEffect(() => {
-    const highlightSyntax = () => {
+    const caretPosition = () => {
       if (!editorRef.current) return;
-  
-     
+    
       const selection = window.getSelection();
+
       if (!selection || selection.rangeCount === 0) return;
   
      
       const range = selection.getRangeAt(0);
-     
       const preCaretRange = range.cloneRange();
-     
       preCaretRange.selectNodeContents(editorRef.current);
-  
       preCaretRange.setEnd(range.startContainer, range.startOffset);
       const caretOffset = preCaretRange.toString().length;
-   
-      
-      
-     
-      editorRef.current.innerHTML =currentFile?.content || "";
+
+      editorRef.current.innerHTML = currentFile?.content || "";
       
     
       const textNodes = getTextNodes(editorRef.current);
@@ -106,8 +100,7 @@ useEffect(() => {
   
       let node = null;
       for (let i = 0; i < textNodes.length; i++) {
-        
-          if (offset <= textNodes[i].textContent!.length) {
+         if (offset <= textNodes[i].textContent!.length) {
               node = textNodes[i];
               break;
             }
@@ -134,7 +127,7 @@ useEffect(() => {
       return textNodes;
     };
   
-    highlightSyntax();
+    caretPosition();
   }, [currentFile]);
   
   

@@ -1,5 +1,5 @@
 import Layout from "./components/Layout";
-import { FileProvider } from "./components/Provider";
+import { FileProvider } from "./components/provider";
 
 
 

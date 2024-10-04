@@ -1,10 +1,9 @@
 
-
 import { useState } from 'react'
-import { useFileContext } from './provider'
 import { languageOptions } from '../lib/languageOption'
 import {  toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useFileContext } from '../hooks/useFileContext';
 
 export default function Navbar() {
   const [selectedOption, setSelectedOption] = useState('Select Language')
