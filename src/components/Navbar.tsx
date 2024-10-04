@@ -12,7 +12,7 @@ export default function Navbar() {
   const {currentFile,updateFileContent,saveChanges,setCurrentLang,currentTheme} = useFileContext()
 
   const resetCode = () => {
-       updateFileContent(currentFile?.id as string,"")
+       updateFileContent(currentFile?.id as string,"//Start writing code here")
        toast.success(`Reset code of ${currentFile?.name }`)
       
     }

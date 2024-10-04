@@ -41,15 +41,17 @@ export const FileProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
   const [currentLang,setCurrentLang] = useState('js')
   const [currentTheme, setTheme] = useState<Theme>(themes.default)
-  const [currentFile, setCurrentFile] = useState<File | null>({
-    id: uuidv4(),
+  const [currentFile, setCurrentFile] = useState<File | null>(()=> {
+    const saveFile = localStorage.getItem('currentfile');
+    return saveFile ? JSON.parse(saveFile) :  { id: uuidv4(),
     name: "Welcome",
-    content: "Welcome! Create a new file or folder to get started.",
+    content: "Welcome! Create a new file or folder to get started."}
   });
 
   useEffect(() => {
     localStorage.setItem('folders', JSON.stringify(folders));
-  }, [folders]);
+    localStorage.setItem('currentfile', JSON.stringify(currentFile));
+  }, [folders,currentFile]);
 
   const addFolder = (parentFolderId: string | null, folderName: string) => {
     const newFolder: Folder = {

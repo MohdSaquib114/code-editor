@@ -131,7 +131,7 @@ export default function FileExplorer() {
     <>
       <div 
         className={`${currentTheme.sidebarBg} ${currentTheme.sidebarText}  h-full overflow-hidden transition-all duration-300 ease-in-out ${
-          isCollapsed ? 'w-0' : 'w-64'
+          isCollapsed ? 'w-0' : 'w-[20rem]'
         }`}
       >
         <div className="w-64 h-full overflow-y-auto">

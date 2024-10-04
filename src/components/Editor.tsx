@@ -1,12 +1,14 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useFileContext } from './provider';
 
 const Editor: React.FC = () => {
+ 
   const editorRef = useRef<HTMLDivElement>(null);
   const {currentFile,updateFileContent, currentTheme} = useFileContext();
+ 
 
   const handleInput = (e: React.FormEvent<HTMLDivElement>) => {
-  
+   
     updateFileContent(currentFile?.id as string,e.currentTarget.innerText)
   };
 
@@ -51,7 +53,7 @@ const Editor: React.FC = () => {
         if (editor) {
             editor.focus();
         }
-
+ 
     }
 };
 
@@ -72,46 +74,69 @@ const Editor: React.FC = () => {
     // selection.addRange(range);
   };
 
-  // Basic Syntax Highlighting (Example: for JavaScript)
-  useEffect(() => {
+
+useEffect(() => {
     const highlightSyntax = () => {
       if (!editorRef.current) return;
-// console.log("in use",content)
-    //   const keywords = ['function', 'const', 'let', 'var', 'if', 'else', 'return'];
-      const highlightedContent = currentFile?.content;
-
-      // Replace keywords with styled versions
-    //   keywords.forEach((keyword) => {
-    //     const regex = new RegExp(`\\b${keyword}\\b`, 'g');
-    //     highlightedContent = highlightedContent.replace(
-    //       regex,
-    //       `<span class="keyword">${keyword}</span>`
-    //     );
-    //   });
-
+  
+     
       const selection = window.getSelection();
-      const range = selection && selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
+      if (!selection || selection.rangeCount === 0) return;
+  
+     
+      const range = selection.getRangeAt(0);
+     
+      const preCaretRange = range.cloneRange();
+     
+      preCaretRange.selectNodeContents(editorRef.current);
+  
+      preCaretRange.setEnd(range.startContainer, range.startOffset);
+      const caretOffset = preCaretRange.toString().length;
+   
+      
+      
+     
+      editorRef.current.innerHTML =currentFile?.content || "";
+      
     
-      const position = range?.startOffset || 0;
-
-      // Update the content
-      editorRef.current.innerHTML = highlightedContent as string;
-
-      // Restore the cursor position
-      const newRange = document.createRange();
-      const textNode = editorRef.current.childNodes[0];
-    //   console.log(position,textNode.textContent?.length)
-      if (textNode) {
-        newRange.setStart(textNode, Math.min(position, textNode.textContent?.length || 0));
+      const textNodes = getTextNodes(editorRef.current);
+ 
+      let offset = caretOffset;
+  
+      let node = null;
+      for (let i = 0; i < textNodes.length; i++) {
+        
+          if (offset <= textNodes[i].textContent!.length) {
+              node = textNodes[i];
+              break;
+            }
+            offset = textNodes[i].textContent!.length + 1;
+        }
+        
+   
+      if (node) {
+        const newRange = document.createRange();
+        newRange.setStart(node, offset);
         newRange.collapse(true);
-        selection?.removeAllRanges();
-        selection?.addRange(newRange);
+        selection.removeAllRanges();
+        selection.addRange(newRange);
       }
-    
     };
-
+  
+    const getTextNodes = (node: Node) => {
+      const textNodes: Text[] = [];
+      const walk = document.createTreeWalker(node, NodeFilter.SHOW_TEXT, null);
+      let n;
+      while ((n = walk.nextNode())) {
+        textNodes.push(n as Text);
+      }
+      return textNodes;
+    };
+  
     highlightSyntax();
   }, [currentFile]);
+  
+  
 
   return (
     <div
