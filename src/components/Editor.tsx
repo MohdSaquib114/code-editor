@@ -8,9 +8,10 @@ const Editor: React.FC = () => {
  
 
   const handleInput = (e: React.FormEvent<HTMLDivElement>) => {
-   
+
     updateFileContent(currentFile?.id as string,e.currentTarget.innerText)
   };
+
 
   
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -145,6 +146,7 @@ useEffect(() => {
       contentEditable={true}
       onInput={handleInput}
       onKeyDown={handleKeyDown}
+      
       className={`w-full h-full border overflow-y-scroll transition-all duration-300 ease-in-out ${currentTheme.borderColor} pt-10 pl-5 font-mono text-sm overflow-y-scroll whitespace-pre-wrap ${currentTheme.editorBg} outline-none ${currentTheme.editorText}`}
     />
   );
